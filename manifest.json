@@ -8,6 +8,11 @@
     "name": "Queertry",
     "url": "https://github.com/queertry"
   },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "st2ys@queertry.com"
+    }
+  },
   "description": "Drag and drop a Spotify track URL into YouTube search and have it auto search for that track.",
   "permissions": [
     "https://open.spotify.com/*"
