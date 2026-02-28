@@ -8,6 +8,16 @@ This addon is not available anywhere else but here. I have not uploaded it to an
 
 I have only tested the addon in Firefox Developer Version, version 149.0b2.
 
+## Settings
+
+At the time of writing, only one setting is available. You can change the setting by left-clicking on the extension in your browser's toolbar.
+This opens the setting's menu.
+
+
+| Name | Type | Default | Description 
+|------|------|---------|------------
+| Drop anywhere | boolean | false | Allows you to drop the track link anywhere on the YouTube page instead of only over the search bar.
+
 ## Installation
 
 Since this addon is unsigned you can only install it temporarily in a standard version of Firefox. To install it permanently, you must use either the Firefox Developer Version, a nightly version or the ESR build.

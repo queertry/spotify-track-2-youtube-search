@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font: message-box;
+        margin: 0;
+        padding: 10px 12px;
+        width: 320px;
+      }
+
+      label {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .hint {
+        margin-top: 6px;
+        opacity: 0.8;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <label aria-describedby="drop-anywhere-hint">
+      <input type="checkbox" id="drop-anywhere">
+      Allow drag &amp; drop anywhere on the page
+    </label>
+    <div id="drop-anywhere-hint" class="hint">Default: off (only when dropping on the search bar).</div>
+
+    <script src="../shared/settings.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

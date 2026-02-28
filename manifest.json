@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Spotify Track Link to YouTube Search",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Queertry",
   "homepage_url": "https://github.com/queertry",
   "developer": {
@@ -15,17 +15,25 @@
   },
   "description": "Drag and drop a Spotify track URL into YouTube search and have it auto search for that track.",
   "permissions": [
-    "https://open.spotify.com/*"
+    "https://open.spotify.com/*",
+    "storage"
   ],
   "background": {
-    "scripts": [ "background.js" ],
+    "scripts": [ "src/background/background.js" ],
     "persistent": false
   },
   "content_scripts": [
     {
       "matches": [ "*://www.youtube.com/*", "*://youtube.com/*" ],
-      "js":  [ "content.js" ],
+      "js":  [ 
+        "src/shared/settings.js",
+        "src/content/content.js"
+      ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "browser_action": {
+    "default_title": "ST2YS",
+    "default_popup": "src/popup/popup.html"
+  }
 }

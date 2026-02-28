@@ -1,4 +1,8 @@
 (() => {
+  async function initSettings() {
+    await window.ST2YS.Settings.loadAll();
+  }
+
   const SPOTIFY_PREFIX = 'https://open.spotify.com/track';
 
   const getSearchInput = () => document.querySelector('input.yt-searchbox-input');
@@ -123,7 +127,10 @@
       return;
     }
 
-    if (e.target !== input) return;
+    const isDroppingOnInput = e.target === input;
+    if (!window.ST2YS.Settings.getValue('DROP_ANYWHERE') && !isDroppingOnInput) {
+      return;
+    }
 
     handle(e.dataTransfer && e.dataTransfer.getData('text/plain'));
     e.preventDefault();
@@ -133,7 +140,10 @@
     const input = getSearchInput();
     if (!input) return;
 
-    if (e.target !== input) return;
+    const isDroppingOnInput = e.target === input;
+    if (!window.ST2YS.Settings.getValue('DROP_ANYWHERE') && !isDroppingOnInput) {
+      return;
+    }
 
     // Required to allow drop
     e.preventDefault();
@@ -144,18 +154,24 @@
     if (!input) return false;
 
     input.addEventListener('paste', onPaste, true);
-    input.addEventListener('dragover', onDragOver, true);
-    input.addEventListener('drop', onDrop, true);
 
     return true;
   }
 
-  // Attach now, and also retry briefly in case YouTube swaps the input
-  if (attach()) return;
+  (async () => {
+    await initSettings();
 
-  let tries = 0;
-  const timer = window.setInterval(() => {
-    tries += 1;
-    if (attach() || tries >= 30) window.clearInterval(timer);
-  }, 500);
+    // Attach now, and also retry briefly in case YouTube swaps the input
+    document.body.addEventListener('dragover', onDragOver, true);
+    document.body.addEventListener('drop', onDrop, true);
+
+    if (attach()) return;
+
+    let tries = 0;
+    const timer = window.setInterval(() => {
+      tries += 1;
+      if (attach() || tries >= 30) window.clearInterval(timer);
+    }, 500);
+  })();
+  
 })();
