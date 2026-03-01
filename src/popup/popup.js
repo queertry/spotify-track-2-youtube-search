@@ -86,9 +86,18 @@
     }
   }
 
+  function setupData() {
+    const manifest = browser.runtime.getManifest();
+    document.getElementById('version-number').textContent = manifest.version;
+    document.getElementById('copyright-link').setAttribute('href', manifest.homepage_url);
+  }
+
   async function init() {
+    setupData();
+
     bindUI();
     bindCacheUI();
+
     await loadIntoUI();
     await loadCacheInfo();
   }

@@ -160,8 +160,10 @@
 
     if (e.target !== input) return;
 
-    handle(e.clipboardData && e.clipboardData.getData('text/plain'));
+    const text = e.clipboardData && e.clipboardData.getData('text/plain');
+    if (!getTrackId(text)) return;
     e.preventDefault();
+    handle(text);
   }
 
   function onDrop(e) {
@@ -176,8 +178,10 @@
       return;
     }
 
-    handle(e.dataTransfer && e.dataTransfer.getData('text/plain'));
+    const text = e.dataTransfer && e.dataTransfer.getData('text/plain');
+    if (!getTrackId(text)) return;
     e.preventDefault();
+    handle(text);
   }
 
   function onDragOver(e) {
