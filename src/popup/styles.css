@@ -44,6 +44,10 @@ label {
   align-items: center;
 }
 
+label.setting-label:not(:first-of-type) {
+  margin-top: 12px;
+}
+
 input[type="checkbox"] {
   accent-color: var(--link);
 }
@@ -59,4 +63,18 @@ section:not(:first-of-type) {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
+}
+
+button {
+  margin-top: 10px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--border);
 }

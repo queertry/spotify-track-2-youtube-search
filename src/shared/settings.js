@@ -3,6 +3,10 @@
     DROP_ANYWHERE: {
       type: 'boolean',
       default: false
+    },
+    USE_CACHE: {
+      type: 'boolean',
+      default: true
     }
   };
 
@@ -60,7 +64,6 @@
 
   function getValue(key) {
     if (!loaded) {
-      // In content scripts, prefer calling `await window.ST2YS_SETTINGS.loadAll()` once.
       return coerce(key, SETTINGS[key]?.default);
     }
 

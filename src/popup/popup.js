@@ -4,6 +4,11 @@
       KEY: 'DROP_ANYWHERE',
       ELEMENT_ID: 'drop-anywhere',
       EVENT: 'change'
+    },
+    USE_CACHE: {
+      KEY: 'USE_CACHE',
+      ELEMENT_ID: 'use-cache',
+      EVENT: 'change'
     }
   };
 
@@ -33,6 +38,34 @@
     }
   }
 
+  function formatBytes(n) {
+    if (n < 1024)        return `${n} bytes`;
+    if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+    return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  async function loadCacheInfo() {
+    const sizeElement = document.getElementById('cache-size');
+    if (!sizeElement) {
+      console.error('ST2YS: Could not load cache info, cache element not found');
+      return;
+    }
+
+    const bytes = await window.ST2YS.Cache.getBytesUsed();
+    sizeElement.textContent = formatBytes(bytes ?? 0);
+    sizeElement.removeAttribute('aria-label');
+  }
+
+  function bindCacheUI() {
+    const btn = document.getElementById('cache-clear');
+    if (!btn) return;
+
+    btn.addEventListener('click', async () => {
+      await window.ST2YS.Cache.clearAll();
+      await loadCacheInfo();
+    });
+  }
+
   function bindUI() {
     for (const item of Object.values(UI)) {
       const element = getInput(item.ELEMENT_ID);
@@ -55,7 +88,9 @@
 
   async function init() {
     bindUI();
+    bindCacheUI();
     await loadIntoUI();
+    await loadCacheInfo();
   }
 
   document.addEventListener('DOMContentLoaded', init);

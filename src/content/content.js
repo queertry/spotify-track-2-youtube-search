@@ -21,7 +21,6 @@
     }
 
     youtubeSearchIcon = searchIcon;
-
     searchIcon.replaceWith(icon);
   }
 
@@ -119,6 +118,12 @@
       return;
     }
 
+    const cached = await window.ST2YS.Cache.get(trackId);
+    if (cached) {
+      setQueryAndSubmit(cached);
+      return;
+    }
+
     const embedUrl = `https://open.spotify.com/embed/track/${trackId}`;
     const resp = await browser.runtime.sendMessage({
       type: 'FETCH_SPOTIFY_TRACK',
@@ -142,6 +147,7 @@
     }
 
     const query = `${meta.title} ${meta.artist}`;
+    window.ST2YS.Cache.set(trackId, query).catch(() => {});
     setQueryAndSubmit(query);
   }
 

@@ -8,16 +8,28 @@
     <main>
       <section id="about">
         <h1>Spotify Track to YouTube Search</h1>
-        <p>Version v1.1.2 &mdash; Copyright &copy; 2026 Queertry</small>
+        <p>Version 1.2.0 &mdash; Copyright &copy; 2026 Queertry</small>
       </section>
 
       <section id="setting">
         <h2>Settings</h2>
-        <label aria-describedby="drop-anywhere-hint">
+        <label class="setting-label" aria-describedby="drop-anywhere-hint">
           <input type="checkbox" id="drop-anywhere">
           Allow drag &amp; drop anywhere on the page
         </label>
-        <div id="drop-anywhere-hint" class="hint">Default: off (only when dropping on the search bar).</div>
+        <div id="drop-anywhere-hint" class="hint">Default: off (only when dropping on the search bar)</div>
+
+        <label class="setting-label" aria-describedby="use-cache-hint">
+          <input type="checkbox" id="use-cache">
+          Cache tracks quicker lookups in the future
+        </label>
+        <div id="use-cache-hint" class="hint">Default: on (a cache entry is retained for 30 days at most)</div>
+      </section>
+
+      <section id="cache">
+        <h2>Cache</h2>
+        <p>Storage used: <span id="cache-size" aria-label="Data unavailable">—</span></p>
+        <button id="cache-clear">Clear cache</button>
       </section>
 
       <section id="attribution">
@@ -27,6 +39,7 @@
     </main>
 
     <script src="../shared/settings.js"></script>
+    <script src="../shared/cache-client.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
