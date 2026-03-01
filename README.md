@@ -10,13 +10,12 @@ I have only tested the addon in Firefox Developer Version, version 149.0b2.
 
 ## Settings
 
-At the time of writing, only one setting is available. You can change the setting by left-clicking on the extension in your browser's toolbar.
-This opens the setting's menu.
-
+You can change your settings by left-clicking on the extension in your browser's toolbar.
 
 | Name | Type | Default | Description 
 |------|------|---------|------------
 | Drop anywhere | boolean | false | Allows you to drop the track link anywhere on the YouTube page instead of only over the search bar.
+| Use cache | boolean | true | Toggles the cache functionality
 
 ## Installation
 
