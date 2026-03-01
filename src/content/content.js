@@ -8,6 +8,32 @@
   const getSearchInput = () => document.querySelector('input.yt-searchbox-input');
   const normalizeText  = s  => (s || '').replace(/\s+/g, ' ').trim();
 
+  let youtubeSearchIcon = null;
+
+  function setLoading() {
+    const icon = window.ST2YS.Icons.get('loading');
+    icon.classList.add('st2ys-loading-icon');
+
+    const searchIcon = document.querySelector('yt-searchbox button.ytSearchboxComponentSearchButton svg');
+    if (searchIcon === null) {
+      console.error('ST2YS: Cannot start loading, YouTube\'s search icon couldn\'t be found.');
+      return;
+    }
+
+    youtubeSearchIcon = searchIcon;
+
+    searchIcon.replaceWith(icon);
+  }
+
+  function stopLoading() {
+    if (youtubeSearchIcon === null) {
+      console.error('ST2YS: Cannot cancel loading animation, missing copy of original search icon');
+      return;
+    }
+
+    document.querySelector('svg.st2ys-loading-icon').replaceWith(youtubeSearchIcon);
+  }
+
   function getTrackId(trackLink) {
     trackLink = normalizeText(trackLink);
     if (!trackLink.startsWith(SPOTIFY_PREFIX)) return null;
@@ -55,6 +81,7 @@
   function setQueryAndSubmit(query) {
     const input = getSearchInput();
     if (!input) {
+      stopLoading();
       console.error('ST2YS: Cannot find search input');
       return false;
     }
@@ -67,20 +94,27 @@
 
     const form = input.parentElement;
     if (!form || typeof form.submit !== 'function') {
+      stopLoading();
       console.error('ST2YS: Cannot find form to submit');
       return false;
     } 
 
     form.submit();
     return true;
-  };
+  }
 
   async function handle(trackLink) {
+    setLoading();
+
     trackLink = normalizeText(trackLink);
-    if (!trackLink.startsWith(SPOTIFY_PREFIX)) return;
+    if (!trackLink.startsWith(SPOTIFY_PREFIX)) {
+      stopLoading();
+      return;
+    }
 
     const trackId = getTrackId(trackLink);
     if (!trackId) {
+      stopLoading();
       console.error('ST2YS: Could not extract track id');
       return;
     }
@@ -92,6 +126,7 @@
     });
 
     if (!resp || !resp.ok) {
+      stopLoading();
       console.error('ST2YS: Could not fetch spotify embed page');
       if (resp.error) {
         console.error('ST2YS: ' + resp.error);
@@ -101,7 +136,10 @@
     }
 
     const meta = parseSpotifyEmbedHtml(resp.html);
-    if (!meta) return;
+    if (!meta) {
+      stopLoading();
+      return;
+    }
 
     const query = `${meta.title} ${meta.artist}`;
     setQueryAndSubmit(query);
