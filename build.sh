@@ -9,6 +9,6 @@ fi
 
 mkdir -p "build/$version"
 
-zip -r "build/$version/st2ys@queertry.com.xpi" src/
+zip -r "build/$version/st2ys@queertry.com.xpi" src/ manifest.json
 echo "Successfully built version $version"
 exit 0
