@@ -24,3 +24,8 @@ Since this addon is unsigned you can only install it temporarily in a standard v
 Additionally, you must browse to `about:config` and set `xpinstall.signatures.required` to `false`. Once that's been done, you can simply drag and drop the .xpi file provided on the release page for this repo onto
 your browser. In case that wouldn't work for it, you can also go to `about:addons`, click on the cog wheel to the upper right on the `extensions` page and select `Install Add-On from File` and then simply select
 the .xpi file.
+
+
+## Attribution
+
+The loading icon found at [src/icons/library/loading.js](https://github.com/queertry/spotify-track-2-youtube-search/blob/main/src/icons/library/loading.js) is from [Animated SVG Preloaders by SVGBackgrounds.com](https://www.svgbackgrounds.com/elements/animated-svg-preloaders/). Thank you for the great icon!

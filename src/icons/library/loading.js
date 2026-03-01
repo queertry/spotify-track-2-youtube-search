@@ -5,6 +5,7 @@
   window.ST2YS.Icons._library = window.ST2YS.Icons._library || {};
   
   window.ST2YS.Icons._library.loading = () => {
+    // Icon from https://www.svgbackgrounds.com/elements/animated-svg-preloaders/
     return `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
         <radialGradient id="a12" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)">

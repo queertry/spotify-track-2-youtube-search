@@ -2,33 +2,29 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <style>
-      body {
-        font: message-box;
-        margin: 0;
-        padding: 10px 12px;
-        width: 320px;
-      }
-
-      label {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-
-      .hint {
-        margin-top: 6px;
-        opacity: 0.8;
-        font-size: 12px;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <label aria-describedby="drop-anywhere-hint">
-      <input type="checkbox" id="drop-anywhere">
-      Allow drag &amp; drop anywhere on the page
-    </label>
-    <div id="drop-anywhere-hint" class="hint">Default: off (only when dropping on the search bar).</div>
+    <main>
+      <section id="about">
+        <h1>Spotify Track to YouTube Search</h1>
+        <p>Version v1.1.1 &mdash; Copyright &copy; 2026 Queertry</small>
+      </section>
+
+      <section id="setting">
+        <h2>Settings</h2>
+        <label aria-describedby="drop-anywhere-hint">
+          <input type="checkbox" id="drop-anywhere">
+          Allow drag &amp; drop anywhere on the page
+        </label>
+        <div id="drop-anywhere-hint" class="hint">Default: off (only when dropping on the search bar).</div>
+      </section>
+
+      <section id="attribution">
+        <h2>Attribution</h2>
+        <p><a href="https://www.svgbackgrounds.com/elements/animated-svg-preloaders/">Animated SVG Preloaders by SVGBackgrounds.com</a></p>
+      </section>
+    </main>
 
     <script src="../shared/settings.js"></script>
     <script src="popup.js"></script>
