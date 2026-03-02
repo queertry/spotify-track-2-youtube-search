@@ -15,6 +15,10 @@
     TOAST_DURATION: {
       type: 'number',
       default: 5
+    },
+    PREFER_SMOOTH_SEARCH: {
+      type: 'boolean',
+      default: true
     }
   };
 

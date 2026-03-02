@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Spotify Track Link to YouTube Search",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": "Queertry",
   "homepage_url": "https://github.com/queertry",
   "developer": {
@@ -24,14 +24,21 @@
   },
   "content_scripts": [
     {
-      "matches": [ "*://www.youtube.com/*", "*://youtube.com/*" ],
+      "matches": [
+        "*://www.youtube.com/*", "*://youtube.com/*",
+        "*://music.youtube.com/*"
+      ],
       "css": [ "src/content/toast/toast.css" ],
       "js":  [
+        "src/shared/settings.js",
+        "src/content/init.js",
         "src/icons/icons.js",
         "src/icons/library/loading.js",
-        "src/shared/settings.js",
         "src/shared/cache-client.js",
         "src/content/toast/toast.js",
+        "src/content/adapters/base.js",
+        "src/content/adapters/youtube.js",
+        "src/content/adapters/youtube-music.js",
         "src/content/main.js"
       ],
       "run_at": "document_idle"

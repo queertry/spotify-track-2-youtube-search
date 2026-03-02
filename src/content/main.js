@@ -3,11 +3,14 @@
     await window.ST2YS.Settings.loadAll();
   }
 
+  const adapter = (window.location.hostname === 'music.youtube.com')
+    ? window.ST2YS.Adapters.YouTubeMusic
+    : window.ST2YS.Adapters.YouTube;
+
   const SPOTIFY_HTTP_PREFIX   = 'https://open.spotify.com/track';
   const SPOTIFY_NATIVE_PREFIX = 'spotify:track:';
 
-  const getSearchInput = () => document.querySelector('input.yt-searchbox-input');
-  const normalizeText  = s  => (s || '').replace(/\s+/g, ' ').trim();
+  const normalizeText = s => (s || '').replace(/\s+/g, ' ').trim();
 
   let youtubeSearchIcon = null;
   let loadingIcon = null;
@@ -18,9 +21,9 @@
     const icon = window.ST2YS.Icons.get('loading');
     icon.classList.add('st2ys-loading-icon');
 
-    const searchIcon = document.querySelector('yt-searchbox button.ytSearchboxComponentSearchButton svg');
+    const searchIcon = adapter.getSearchIcon();
     if (searchIcon === null) {
-      console.error('ST2YS: Cannot start loading, YouTube\'s search icon couldn\'t be found.');
+      console.error('ST2YS: Cannot start loading, search icon couldn\'t be found.');
       return;
     }
 
@@ -94,34 +97,12 @@
     return { title, artist };
   };
 
-  function setQueryAndSubmit(query, openInNewTab) {
-    if (openInNewTab) {
-      window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(query), '_blank');
-      return true;
-    }
-
-    const input = getSearchInput();
-    if (!input) {
+  async function setQueryAndSubmit(query, openInNewTab) {
+    try {
+      return await adapter.performSearch(query, openInNewTab);
+    } finally {
       stopLoading();
-      console.error('ST2YS: Cannot find search input');
-      return false;
     }
-
-    input.value = query;
-
-    // Make YouTube react to the value change
-    input.dispatchEvent(new Event('input',  { bubbles: true, cancelable: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-
-    const form = input.parentElement;
-    if (!form || typeof form.submit !== 'function') {
-      stopLoading();
-      console.error('ST2YS: Cannot find form to submit');
-      return false;
-    } 
-
-    form.submit();
-    return true;
   }
 
   async function handle(trackLink, openInNewTab) {
@@ -175,7 +156,7 @@
   }
 
   function onPaste(e) {
-    const input = getSearchInput();
+    const input = adapter.getSearchBar();
     if (!input) {
       console.error('ST2YS: Cannot find search input');
       return;
@@ -192,11 +173,8 @@
   }
 
   function onDrop(e) {
-    const input = getSearchInput();
-    if (!input) {
-      console.error('ST2YS: Cannot find search input');
-      return;
-    }
+    const input = adapter.getSearchBar();
+    if (!input) return;
 
     const isDroppingOnInput = e.target === input;
     if (!window.ST2YS.Settings.getValue('DROP_ANYWHERE') && !isDroppingOnInput) {
@@ -212,7 +190,7 @@
   }
 
   function onDragOver(e) {
-    const input = getSearchInput();
+    const input = adapter.getSearchBar();
     if (!input) return;
 
     const isDroppingOnInput = e.target === input;
@@ -225,16 +203,15 @@
   }
 
   function attach() {
-    const input = getSearchInput();
+    const input = adapter.getSearchBar();
     if (!input) return false;
 
     input.addEventListener('paste', onPaste, true);
-
     return true;
   }
 
   (async () => {
-    console.info('ST2YS: Loading extension...');
+    console.info('ST2YS: Loading main logic...');
     await initSettings();
 
     // Track Shift key state to override a potential FALSE value of OPEN_IN_NEW_TAB specifically when pasting the link
@@ -247,7 +224,7 @@
 
     // Attach now, and also retry briefly in case YouTube swaps the input
     if (attach()){
-      console.info('ST2YS: Extension loaded successfully.');
+      console.info('ST2YS: Main logic loaded successfully.');
       return;
     } 
 
@@ -258,7 +235,7 @@
 
       if (attached || tries >= 30) {
         if (!attached && tries >= 30) {
-          console.error('ST2YS: Extension failed to load.');
+          console.error('ST2YS: Main logic failed to load.');
         }
 
         window.clearInterval(timer);

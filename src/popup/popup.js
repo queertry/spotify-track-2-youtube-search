@@ -19,6 +19,11 @@
       KEY: 'TOAST_DURATION',
       ELEMENT_ID: 'toast-duration',
       EVENT: 'change'
+    },
+    PREFER_SMOOTH_SEARCH: {
+      KEY: 'PREFER_SMOOTH_SEARCH',
+      ELEMENT_ID: 'prefer-smooth-search',
+      EVENT: 'change'
     }
   };
 
