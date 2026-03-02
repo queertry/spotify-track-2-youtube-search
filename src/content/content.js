@@ -134,7 +134,8 @@
       const trackId = getTrackId(normalizeText(trackLink));
       if (!trackId) {
         stopLoading();
-        console.error('ST2YS: Could not extract track id');
+        console.error('ST2YS: Failed to extract track id');
+        window.ST2YS.Toast.show('Failed to extract a track ID from the link.');
         return;
       }
 
@@ -152,17 +153,16 @@
 
       if (!resp || !resp.ok) {
         stopLoading();
-        console.error('ST2YS: Could not fetch spotify embed page');
-        if (resp && resp.error) {
-          console.error('ST2YS: ' + resp.error);
-        }
-
+        console.error('ST2YS: Failed to fetch spotify embed page');
+        if (resp && resp.error) console.error('ST2YS: ' + resp.error);
+        window.ST2YS.Toast.show('Failed to reach Spotify to fetch track info.');
         return;
       }
 
       const meta = parseSpotifyEmbedHtml(resp.html);
       if (!meta) {
         stopLoading();
+        window.ST2YS.Toast.show('Failed to read the track title and artist from Spotify\'s response.');
         return;
       }
 

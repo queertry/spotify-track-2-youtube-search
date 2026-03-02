@@ -1,0 +1,46 @@
+.st2ys-toast {
+  position: fixed;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 16px;
+  max-width: 480px;
+
+  background: rgb(33, 33, 33);
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  font-family: "YouTube Noto", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+
+  animation: st2ys-toast-in 0.15s ease-out;
+}
+
+@keyframes st2ys-toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);    }
+}
+
+.st2ys-toast-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.7;
+}
+
+.st2ys-toast-close:hover {
+  opacity: 1;
+}

@@ -11,6 +11,10 @@
     OPEN_IN_NEW_TAB: {
       type: 'boolean',
       default: false
+    },
+    TOAST_DURATION: {
+      type: 'number',
+      default: 5
     }
   };
 

@@ -25,11 +25,13 @@
   "content_scripts": [
     {
       "matches": [ "*://www.youtube.com/*", "*://youtube.com/*" ],
+      "css": [ "src/content/toast.css" ],
       "js":  [
         "src/icons/icons.js",
         "src/icons/library/loading.js",
         "src/shared/settings.js",
         "src/shared/cache-client.js",
+        "src/content/toast.js",
         "src/content/content.js"
       ],
       "run_at": "document_idle"

@@ -14,6 +14,11 @@
       KEY: 'OPEN_IN_NEW_TAB',
       ELEMENT_ID: 'open-in-new-tab',
       EVENT: 'change'
+    },
+    TOAST_DURATION: {
+      KEY: 'TOAST_DURATION',
+      ELEMENT_ID: 'toast-duration',
+      EVENT: 'change'
     }
   };
 
@@ -27,7 +32,7 @@
     for (const item of Object.values(UI)) {
       const input = getInput(item.ELEMENT_ID);
       if (!input) {
-        console.error(`ST2YS: Could not load settings ${item.KEY} into element ${item.ELEMENT_ID} because the element could not be found.`);
+        console.error(`ST2YS: Failed to load settings ${item.KEY} into element ${item.ELEMENT_ID} because the element could not be found.`);
         continue;
       }
 
@@ -52,7 +57,7 @@
   async function loadCacheInfo() {
     const sizeElement = document.getElementById('cache-size');
     if (!sizeElement) {
-      console.error('ST2YS: Could not load cache info, cache element not found');
+      console.error('ST2YS: Failed to load cache info, cache element not found');
       return;
     }
 
@@ -77,7 +82,7 @@
     for (const item of Object.values(UI)) {
       const element = getInput(item.ELEMENT_ID);
       if (!element) {
-        console.error(`ST2YS: Could not bind event listener for setting ${item.KEY} and element ${item.ELEMENT_ID} because the element could not be found.`);
+        console.error(`ST2YS: Failed to bind event listener for setting ${item.KEY} and element ${item.ELEMENT_ID} because the element could not be found.`);
         continue;
       }
 

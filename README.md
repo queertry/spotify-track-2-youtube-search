@@ -18,6 +18,17 @@ You can change your settings by left-clicking on the extension in your browser's
 | Use cache | boolean | true | Toggles the cache functionality
 | Open in new tab | boolean | false | When true, all track queries will be done in a new tab. Even if false, the query will run in a new tab if the SHIFT key is held while pasting or dropping the track link.
 
+## Accessibility
+
+I've tried keeping accessibility in mind when developing this addon, however I might of course miss something or do something wrong somewhere, so
+accessibility related feedback is very welcome!
+
+Below is a table of accessibility-oriented settings.
+
+| Name | Type | Default | Description
+|------|------|---------|------------
+| Toast duration | Dropdown | 5 seconds | Controls the amount of time any toast messages (currently just error messages) are displayed for before being automatically dismissed. A close button to mnaually dimiss the toast is always available.
+
 ## Installation
 
 Since this addon is unsigned you can only install it temporarily in a standard version of Firefox. To install it permanently, you must use either the Firefox Developer Version, a nightly version or the ESR build.
