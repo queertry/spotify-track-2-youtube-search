@@ -51,8 +51,10 @@
       return;
     }
 
-    const bytes = await window.ST2YS.Cache.getBytesUsed();
-    sizeElement.textContent = formatBytes(bytes ?? 0);
+    const { bytes, count } = await window.ST2YS.Cache.getStats();
+    const trackLabel = count === 1 ? 'track' : 'tracks';
+
+    sizeElement.textContent = count > 0 ? `${count} ${trackLabel} (${formatBytes(bytes)}) stored in cache` : `0 tracks stored in cache`;
     sizeElement.removeAttribute('aria-label');
   }
 

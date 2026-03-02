@@ -35,15 +35,15 @@
     pruneInProgress.catch(() => {});
   }
 
-  async function computeTotalBytes(index) {
+  async function computeStats(index) {
     if (index === undefined) index = await loadIndex();
 
-    let total = 0;
+    let bytes = 0;
     for (const meta of Object.values(index)) {
-      total += (meta && meta.bytes) ? meta.bytes : 0;
+      bytes += (meta && meta.bytes) ? meta.bytes : 0;
     }
 
-    return total;
+    return { bytes, count: Object.keys(index).length };
   }
 
   async function pruneNow() {
@@ -73,7 +73,7 @@
       return;
     }
 
-    let totalBytes = await computeTotalBytes(index);
+    let totalBytes = (await computeStats(index)).bytes;
 
     const isOverEntries = () =>
       (typeof MAX_ENTRIES === 'number') &&
@@ -174,7 +174,7 @@
     index[key] = {
       expiresAt,
       lastAccess: currentTime,
-      bytes: bytesOf(JSON.stringify(value)) + bytesOf(key)
+      bytes: bytesOf(JSON.stringify(value)) + bytesOf(PREFIX + key)
     };
 
     console.debug('ST2YS Cache: set', key, '→', value);
@@ -212,8 +212,8 @@
       case 'get':          return get(message.key);
       case 'set':          return set(message.key, message.value);
       case 'del':          return del(message.key);
-      case 'clearAll':     return clearAll();
-      case 'getBytesUsed': return computeTotalBytes();
+      case 'clearAll':  return clearAll();
+      case 'getStats':  return computeStats();
     }
   });
 

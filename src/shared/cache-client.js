@@ -16,7 +16,7 @@
   }
 
   function callAlways(operation, payload) {
-    // Bypasses isCacheEnabled — for clearAll and getBytesUsed in popup context.
+    // Bypasses isCacheEnabled — for clearAll and getStats in popup context.
     return browser.runtime.sendMessage({
       type: 'ST2YS_CACHE',
       operation,
@@ -25,11 +25,11 @@
   }
 
   window.ST2YS.Cache = {
-    get(key)        { return call('get',  { key }); },
+    get(key)        { return call('get',  { key });        },
     set(key, value) { return call('set',  { key, value }); },
-    del(key)        { return call('del',  { key }); },
-    clearAll()      { return callAlways('clearAll'); },
-    getBytesUsed()  { return callAlways('getBytesUsed'); }
+    del(key)        { return call('del',  { key });        },
+    clearAll()      { return callAlways('clearAll');       },
+    getStats()      { return callAlways('getStats');       }
   };
 
 })();
