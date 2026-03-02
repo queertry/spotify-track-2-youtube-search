@@ -140,8 +140,6 @@
       await browser.storage.local.remove(storageKey);
       delete index[key];
       await saveIndex(index);
-
-      schedulePrune();
       return null;
     }
 
@@ -152,14 +150,11 @@
       console.debug('ST2YS Cache: miss (value missing from storage)', key);
       delete index[key];
       await saveIndex(index);
-
-      schedulePrune();
       return null;
     }
 
     console.debug('ST2YS Cache: hit', key, '→', value);
     scheduleTouchUpdate(index, key);
-    schedulePrune();
 
     return value;
   }

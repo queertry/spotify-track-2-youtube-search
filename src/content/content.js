@@ -9,6 +9,7 @@
   const normalizeText  = s  => (s || '').replace(/\s+/g, ' ').trim();
 
   let youtubeSearchIcon = null;
+  let loadingIcon = null;
 
   function setLoading() {
     const icon = window.ST2YS.Icons.get('loading');
@@ -20,7 +21,9 @@
       return;
     }
 
+    loadingIcon = icon;
     youtubeSearchIcon = searchIcon;
+
     searchIcon.replaceWith(icon);
   }
 
@@ -30,7 +33,10 @@
       return;
     }
 
-    document.querySelector('svg.st2ys-loading-icon').replaceWith(youtubeSearchIcon);
+    loadingIcon.replaceWith(youtubeSearchIcon);
+
+    loadingIcon = null;
+    youtubeSearchIcon = null;
   }
 
   function getTrackId(trackLink) {
@@ -66,8 +72,8 @@
     const titleElement  = doc.querySelector('h1 a');
     const artistElement = doc.querySelector('h2 a');
 
-    const title  = normalizeText(titleElement  && titleElement.innerText);
-    const artist = normalizeText(artistElement && artistElement.innerText);
+    const title  = normalizeText(titleElement  && titleElement.textContent);
+    const artist = normalizeText(artistElement && artistElement.textContent);
 
     if (!title || !artist) {
       console.error('ST2YS: Was not able to find title and/or artist');
@@ -105,13 +111,7 @@
   async function handle(trackLink) {
     setLoading();
 
-    trackLink = normalizeText(trackLink);
-    if (!trackLink.startsWith(SPOTIFY_PREFIX)) {
-      stopLoading();
-      return;
-    }
-
-    const trackId = getTrackId(trackLink);
+    const trackId = getTrackId(normalizeText(trackLink));
     if (!trackId) {
       stopLoading();
       console.error('ST2YS: Could not extract track id');
