@@ -46,3 +46,13 @@ Below are outlined the steps for installation in Firefox, other browsers likely 
 ## Attribution
 
 The loading icon found at [src/icons/library/loading.js](https://github.com/queertry/spotify-track-2-youtube-search/blob/main/src/icons/library/loading.js) is from [Animated SVG Preloaders by SVGBackgrounds.com](https://www.svgbackgrounds.com/elements/animated-svg-preloaders/). Thank you for the great icon!
+
+## For Development
+
+### Creating a build
+
+To create a build of this addon, run the [build.sh](https://github.com/queertry/spotify-track-2-youtube-search/blob/main/build.sh) script. It has a few dependencies that may not be installed by default on your system. They are the following:
+
+* [esbuild](https://esbuild.github.io/) - used to bundle and minify the js files. The build script itself will also help you install it if necessary.
+* [jq](https://jqlang.org/) - used to parse and edit the manifest.json file. This can usually be installed via a standard package manager, like `apt`
+* `zip` - used to create the final .xpi file. This can also usually be installed via a standard package manager, like `apt`
