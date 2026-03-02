@@ -3,7 +3,8 @@
     await window.ST2YS.Settings.loadAll();
   }
 
-  const SPOTIFY_PREFIX = 'https://open.spotify.com/track';
+  const SPOTIFY_HTTP_PREFIX   = 'https://open.spotify.com/track';
+  const SPOTIFY_NATIVE_PREFIX = 'spotify:track:';
 
   const getSearchInput = () => document.querySelector('input.yt-searchbox-input');
   const normalizeText  = s  => (s || '').replace(/\s+/g, ' ').trim();
@@ -42,20 +43,28 @@
 
   function getTrackId(trackLink) {
     trackLink = normalizeText(trackLink);
-    if (!trackLink.startsWith(SPOTIFY_PREFIX)) return null;
 
-    try {
-      const url = new URL(trackLink);
-      const parts = url.pathname.split('/').filter(x => !!x);
+    if (trackLink.startsWith(SPOTIFY_HTTP_PREFIX)) {
+      try {
+        const url = new URL(trackLink);
+        const parts = url.pathname.split('/').filter(x => !!x);
 
-      if (parts[0] !== 'track') return null;
-      if (!parts[1]) return null;
+        if (parts[0] !== 'track') return null;
+        if (!parts[1]) return null;
 
-      return parts[1];
-    } catch (e) {
-      console.error('ST2YS:', e);
-      return null;
+        return parts[1];
+      } catch (e) {
+        console.error('ST2YS:', e);
+        return null;
+      }
     }
+
+    if (trackLink.startsWith(SPOTIFY_NATIVE_PREFIX)) {
+      const id = trackLink.slice(SPOTIFY_NATIVE_PREFIX.length);
+      return id || null;
+    }
+
+    return null;
   }
 
   function parseSpotifyEmbedHtml(html) {
