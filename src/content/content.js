@@ -12,6 +12,7 @@
   let youtubeSearchIcon = null;
   let loadingIcon = null;
   let isHandling = false;
+  let shiftHeld = false;
 
   function setLoading() {
     const icon = window.ST2YS.Icons.get('loading');
@@ -93,7 +94,12 @@
     return { title, artist };
   };
 
-  function setQueryAndSubmit(query) {
+  function setQueryAndSubmit(query, openInNewTab) {
+    if (openInNewTab) {
+      window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(query), '_blank');
+      return true;
+    }
+
     const input = getSearchInput();
     if (!input) {
       stopLoading();
@@ -118,7 +124,7 @@
     return true;
   }
 
-  async function handle(trackLink) {
+  async function handle(trackLink, openInNewTab) {
     if (isHandling) return;
     isHandling = true;
 
@@ -134,7 +140,7 @@
 
       const cached = await window.ST2YS.Cache.get(trackId);
       if (cached) {
-        setQueryAndSubmit(cached);
+        setQueryAndSubmit(cached, openInNewTab);
         return;
       }
 
@@ -162,7 +168,7 @@
 
       const query = `${meta.title} ${meta.artist}`;
       window.ST2YS.Cache.set(trackId, query).catch(() => {});
-      setQueryAndSubmit(query);
+      setQueryAndSubmit(query, openInNewTab);
     } finally {
       isHandling = false;
     }
@@ -180,7 +186,9 @@
     const text = e.clipboardData && e.clipboardData.getData('text/plain');
     if (!getTrackId(text)) return;
     e.preventDefault();
-    handle(text);
+
+    // paste has no e.shiftKey — use the tracked shiftHeld flag instead
+    handle(text, window.ST2YS.Settings.getValue('OPEN_IN_NEW_TAB') || shiftHeld);
   }
 
   function onDrop(e) {
@@ -198,7 +206,9 @@
     const text = e.dataTransfer && e.dataTransfer.getData('text/plain');
     if (!getTrackId(text)) return;
     e.preventDefault();
-    handle(text);
+
+    // drop exposes shiftKey directly
+    handle(text, window.ST2YS.Settings.getValue('OPEN_IN_NEW_TAB') || e.shiftKey);
   }
 
   function onDragOver(e) {
@@ -224,18 +234,35 @@
   }
 
   (async () => {
+    console.info('ST2YS: Loading extension...');
     await initSettings();
 
-    // Attach now, and also retry briefly in case YouTube swaps the input
+    // Track Shift key state to override a potential FALSE value of OPEN_IN_NEW_TAB specifically when pasting the link
+    document.addEventListener('keydown', e => { if (e.key === 'Shift') shiftHeld = true;  }, true);
+    document.addEventListener('keyup',   e => { if (e.key === 'Shift') shiftHeld = false; }, true);
+
+    // Allow drag-and-drop of tracks onto the page as a whole
     document.body.addEventListener('dragover', onDragOver, true);
     document.body.addEventListener('drop', onDrop, true);
 
-    if (attach()) return;
+    // Attach now, and also retry briefly in case YouTube swaps the input
+    if (attach()){
+      console.info('ST2YS: Extension loaded successfully.');
+      return;
+    } 
 
     let tries = 0;
     const timer = window.setInterval(() => {
       tries += 1;
-      if (attach() || tries >= 30) window.clearInterval(timer);
+      const attached = attach();
+
+      if (attached || tries >= 30) {
+        if (!attached && tries >= 30) {
+          console.error('ST2YS: Extension failed to load.');
+        }
+
+        window.clearInterval(timer);
+      }
     }, 500);
   })();
   

@@ -7,6 +7,10 @@
     USE_CACHE: {
       type: 'boolean',
       default: true
+    },
+    OPEN_IN_NEW_TAB: {
+      type: 'boolean',
+      default: false
     }
   };
 

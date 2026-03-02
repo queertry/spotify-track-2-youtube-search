@@ -16,6 +16,7 @@ You can change your settings by left-clicking on the extension in your browser's
 |------|------|---------|------------
 | Drop anywhere | boolean | false | Allows you to drop the track link anywhere on the YouTube page instead of only over the search bar.
 | Use cache | boolean | true | Toggles the cache functionality
+| Open in new tab | boolean | false | When true, all track queries will be done in a new tab. Even if false, the query will run in a new tab if the SHIFT key is held while pasting or dropping the track link.
 
 ## Installation
 

@@ -9,6 +9,11 @@
       KEY: 'USE_CACHE',
       ELEMENT_ID: 'use-cache',
       EVENT: 'change'
+    },
+    OPEN_IN_NEW_TAB: {
+      KEY: 'OPEN_IN_NEW_TAB',
+      ELEMENT_ID: 'open-in-new-tab',
+      EVENT: 'change'
     }
   };
 
