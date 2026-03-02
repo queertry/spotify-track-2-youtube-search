@@ -20,10 +20,15 @@ You can change your settings by left-clicking on the extension in your browser's
 ## Installation
 
 Since this addon is unsigned you can only install it temporarily in a standard version of Firefox. To install it permanently, you must use either the Firefox Developer Version, a nightly version or the ESR build.
-Additionally, you must browse to `about:config` and set `xpinstall.signatures.required` to `false`. Once that's been done, you can simply drag and drop the .xpi file provided on the release page for this repo onto
-your browser. In case that wouldn't work for it, you can also go to `about:addons`, click on the cog wheel to the upper right on the `extensions` page and select `Install Add-On from File` and then simply select
-the .xpi file.
 
+Below are outlined the steps for installation in Firefox, other browsers likely have a similar installation process, though
+1. Install one of the above mentioned Firefox browsers
+1. Browse to `about:config`
+1. Search up the setting `xpinstall.signatures.required` and set it to `false`
+1. Restart Firefox
+1. Download the .xpi file from the latest release of this addon and either  
+  a) drag and drop the file anywhere onto your browser  
+  b) go to `about:addons` and use the cogwheel in the top right to `Install Add-On from File`
 
 ## Attribution
 
