@@ -10,6 +10,7 @@
 
   let youtubeSearchIcon = null;
   let loadingIcon = null;
+  let isHandling = false;
 
   function setLoading() {
     const icon = window.ST2YS.Icons.get('loading');
@@ -109,46 +110,53 @@
   }
 
   async function handle(trackLink) {
-    setLoading();
+    if (isHandling) return;
+    isHandling = true;
 
-    const trackId = getTrackId(normalizeText(trackLink));
-    if (!trackId) {
-      stopLoading();
-      console.error('ST2YS: Could not extract track id');
-      return;
-    }
+    try {
+      setLoading();
 
-    const cached = await window.ST2YS.Cache.get(trackId);
-    if (cached) {
-      setQueryAndSubmit(cached);
-      return;
-    }
-
-    const embedUrl = `https://open.spotify.com/embed/track/${trackId}`;
-    const resp = await browser.runtime.sendMessage({
-      type: 'FETCH_SPOTIFY_TRACK',
-      url: embedUrl
-    });
-
-    if (!resp || !resp.ok) {
-      stopLoading();
-      console.error('ST2YS: Could not fetch spotify embed page');
-      if (resp.error) {
-        console.error('ST2YS: ' + resp.error);
+      const trackId = getTrackId(normalizeText(trackLink));
+      if (!trackId) {
+        stopLoading();
+        console.error('ST2YS: Could not extract track id');
+        return;
       }
 
-      return;
-    }
+      const cached = await window.ST2YS.Cache.get(trackId);
+      if (cached) {
+        setQueryAndSubmit(cached);
+        return;
+      }
 
-    const meta = parseSpotifyEmbedHtml(resp.html);
-    if (!meta) {
-      stopLoading();
-      return;
-    }
+      const embedUrl = `https://open.spotify.com/embed/track/${trackId}`;
+      const resp = await browser.runtime.sendMessage({
+        type: 'FETCH_SPOTIFY_TRACK',
+        url: embedUrl
+      });
 
-    const query = `${meta.title} ${meta.artist}`;
-    window.ST2YS.Cache.set(trackId, query).catch(() => {});
-    setQueryAndSubmit(query);
+      if (!resp || !resp.ok) {
+        stopLoading();
+        console.error('ST2YS: Could not fetch spotify embed page');
+        if (resp && resp.error) {
+          console.error('ST2YS: ' + resp.error);
+        }
+
+        return;
+      }
+
+      const meta = parseSpotifyEmbedHtml(resp.html);
+      if (!meta) {
+        stopLoading();
+        return;
+      }
+
+      const query = `${meta.title} ${meta.artist}`;
+      window.ST2YS.Cache.set(trackId, query).catch(() => {});
+      setQueryAndSubmit(query);
+    } finally {
+      isHandling = false;
+    }
   }
 
   function onPaste(e) {
