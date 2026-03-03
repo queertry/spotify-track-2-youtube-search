@@ -13,7 +13,9 @@ body {
   font: message-box;
   margin: 0;
   padding: 10px 12px;
-  width: 380px;
+  width: 400px;
+
+  overflow-x: hidden;
 
   background: var(--bg);
   color: var(--fg);

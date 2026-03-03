@@ -1,26 +1,5 @@
 (() => {
-  const SETTINGS = {
-    DROP_ANYWHERE: {
-      type: 'boolean',
-      default: false
-    },
-    USE_CACHE: {
-      type: 'boolean',
-      default: true
-    },
-    OPEN_IN_NEW_TAB: {
-      type: 'boolean',
-      default: false
-    },
-    TOAST_DURATION: {
-      type: 'number',
-      default: 5
-    },
-    PREFER_SMOOTH_SEARCH: {
-      type: 'boolean',
-      default: true
-    }
-  };
+  let _schema = null;
 
   const cache = Object.create(null);
   const changeCallbacks = new Set();
@@ -29,7 +8,7 @@
   let loadPromise = null;
 
   function coerce(key, value) {
-    const setting = SETTINGS[key];
+    const setting = _schema?.[key];
     if (!setting) return value;
 
     if (setting.type === 'boolean') return !!value;
@@ -45,7 +24,7 @@
 
   function getDefaultSettings() {
     const obj = {};
-    for (const [ key, definition ] of Object.entries(SETTINGS)) {
+    for (const [ key, definition ] of Object.entries(_schema)) {
       obj[key] = definition.default;
     }
 
@@ -53,13 +32,26 @@
   }
 
   async function loadAll() {
+    console.info('ST2YS', 1);
+
     if (loadPromise) return loadPromise;
+    if (loaded) return Promise.resolve();
+
+    console.info('ST2YS', 2);
 
     loadPromise = (async () => {
-      const defaults = getDefaultSettings();
-      const stored = await browser.storage.local.get(Object.keys(SETTINGS));
+      console.info('ST2YS', 3);
+      await window.ST2YS.ResourceLoader.ready();
+      _schema = window.ST2YS.Resources.Settings;
+      console.info('ST2YS', 4);
 
-      for (const key of Object.keys(SETTINGS)) {
+      const defaults = getDefaultSettings();
+      console.info('ST2YS', 5);
+
+      const stored = await browser.storage.local.get(Object.keys(_schema));
+      console.info('ST2YS', 6);
+
+      for (const key of Object.keys(_schema)) {
         const raw = Object.prototype.hasOwnProperty.call(stored, key)
           ? stored[key]
           : defaults[key];
@@ -67,27 +59,26 @@
         cache[key] = coerce(key, raw);
       }
 
+      console.info('ST2YS', 7);
+
       loaded = true;
-      return { ...cache };
+      return Promise.resolve();
     })();
 
     return loadPromise;
   }
 
   function getValue(key) {
-    if (!loaded) {
-      return coerce(key, SETTINGS[key]?.default);
-    }
-
+    if (!loaded) return undefined;
     return cache[key];
   }
 
   function getDefinition(key) {
-    return SETTINGS[key];
+    return _schema?.[key];
   }
 
   async function setValue(key, value) {
-    if (!SETTINGS[key]) return;
+    if (!_schema?.[key]) return;
 
     const coercedValue = coerce(key, value);
     cache[key] = coercedValue;
@@ -95,11 +86,11 @@
     await browser.storage.local.set({ [key]: coercedValue });
   }
 
-   browser.storage.onChanged.addListener((changes, area) => {
+  browser.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local') return;
 
     for (const [ key, change ] of Object.entries(changes)) {
-      if (!SETTINGS[key]) continue;
+      if (!_schema?.[key]) continue;
 
       const value = coerce(key, change.newValue);
       cache[key] = value;
@@ -118,7 +109,7 @@
 
   window.ST2YS = window.ST2YS || {};
   window.ST2YS.Settings = {
-    schema: SETTINGS,
+    get schema() { return _schema; },
     getDefinition,
     loadAll,
     getValue,

@@ -1,0 +1,45 @@
+{
+  "DROP_ANYWHERE": {
+    "type": "boolean",
+    "default": false,
+    "section": "settings",
+    "label": "Allow drag & drop anywhere on the page",
+    "hint": "Default: off (only when dropping on the search bar)"
+  },
+  "USE_CACHE": {
+    "type": "boolean",
+    "default": true,
+    "section": "settings",
+    "label": "Cache tracks for quicker lookups in the future",
+    "hint": "Default: on (a cache entry is retained for 30 days at most)"
+  },
+  "OPEN_IN_NEW_TAB": {
+    "type": "boolean",
+    "default": false,
+    "section": "settings",
+    "label": "Open YouTube search in a new tab",
+    "hint": "Default: off (hold Shift while pasting or dropping to temporarily enable)"
+  },
+  "PREFER_SMOOTH_SEARCH": {
+    "type": "boolean",
+    "default": true,
+    "section": "settings",
+    "label": "Prefer a smoother searching experience",
+    "hint": "Default: on (some users may experience this as a slower search)"
+  },
+  "TOAST_DURATION": {
+    "type": "number",
+    "default": 5,
+    "section": "accessibility",
+    "label": "Error notification duration",
+    "hint": "How long error messages stay visible before auto-dismissing",
+    "inputType": "select",
+    "options": [
+      { "value": 3,  "label": "3 seconds"           },
+      { "value": 5,  "label": "5 seconds (default)" },
+      { "value": 10, "label": "10 seconds"          },
+      { "value": 30, "label": "30 seconds"          },
+      { "value": 0,  "label": "Until dismissed"     }
+    ]
+  }
+}

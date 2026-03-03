@@ -30,6 +30,7 @@
       ],
       "css": [ "src/content/toast/toast.css" ],
       "js":  [
+        "src/resources/loader/resource-loader.js",
         "src/shared/settings.js",
         "src/content/init.js",
         "src/icons/icons.js",

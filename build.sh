@@ -223,6 +223,21 @@ copy_manifest_css() {
   done
 }
 
+copy_and_minify_resources() {
+  shopt -s nullglob
+
+  mkdir -p dist/resources/
+  cp src/resources/*.json dist/resources/
+
+  local resource tmp
+
+  for resource in dist/resources/*.json; do
+    tmp=$(mktemp)
+    jq -c . "$resource" > "$tmp"
+    mv "$tmp" "$resource"
+  done
+}
+
 write_dist_manifest() {
   # - background scripts -> ["background.js"]
   # - content scripts js -> ["content.js"]
@@ -255,6 +270,9 @@ build_dist() {
   # copy css from manifest automatically
   copy_manifest_css
 
+  # copy static resources
+  copy_and_minify_resources
+
   # copy LICENSE
   cp LICENSE dist/LICENSE 2>/dev/null || true
 
@@ -279,11 +297,13 @@ build_dist() {
   "$esbuild" "$TMP_BUILD_DIR/content.entry.js" \
     --bundle --minify \
     --target=es2020 --format=iife \
+    --define:RESOURCES_BASE='"resources/"' \
     --outfile="dist/content.js"
 
   "$esbuild" "$TMP_BUILD_DIR/popup.entry.js" \
     --bundle --minify \
     --target=es2020 --format=iife \
+    --define:RESOURCES_BASE='"resources/"' \
     --outfile="dist/popup/popup.js"
 
   # dist manifest

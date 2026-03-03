@@ -11,46 +11,12 @@
         <p>Version <span id="version-number"></span> &mdash; Copyright &copy; 2026 <a href="#!" target="_blank" id="copyright-link">Queertry</a></p>
       </section>
 
-      <section id="setting">
+      <section id="settings">
         <h2>Settings</h2>
-        <label class="setting-label" aria-describedby="drop-anywhere-hint">
-          <input type="checkbox" id="drop-anywhere">
-          Allow drag &amp; drop anywhere on the page
-        </label>
-        <div id="drop-anywhere-hint" class="hint">Default: off (only when dropping on the search bar)</div>
-
-        <label class="setting-label" aria-describedby="use-cache-hint">
-          <input type="checkbox" id="use-cache">
-          Cache tracks for quicker lookups in the future
-        </label>
-        <div id="use-cache-hint" class="hint">Default: on (a cache entry is retained for 30 days at most)</div>
-
-        <label class="setting-label" aria-describedby="open-in-new-tab-hint">
-          <input type="checkbox" id="open-in-new-tab">
-          Open YouTube search in a new tab
-        </label>
-        <div id="open-in-new-tab-hint" class="hint">Default: off (hold Shift while pasting or dropping to temporarily enable)</div>
-
-        <label class="setting-label" aria-describedby="prefer-smooth-search-hint">
-          <input type="checkbox" id="prefer-smooth-search">
-          Prefer a smoother searching experience
-        </label>
-        <div id="prefer-smooth-search-hint" class="hint">Default: on (some users may experience this as a slower search)</div>
       </section>
 
       <section id="accessibility">
         <h2>Accessibility</h2>
-        <label class="setting-label" aria-describedby="toast-duration-hint">
-          <span>Error notification duration</span>
-          <select id="toast-duration">
-            <option value="3">3 seconds</option>
-            <option value="5">5 seconds (default)</option>
-            <option value="10">10 seconds</option>
-            <option value="30">30 seconds</option>
-            <option value="0">Until dismissed</option>
-          </select>
-        </label>
-        <div id="toast-duration-hint" class="hint">How long error messages stay visible before auto-dismissing</div>
       </section>
 
       <section id="cache">
@@ -66,6 +32,7 @@
     </main>
 
     <!-- BUILD:POPUP_SCRIPTS -->
+    <script src="../resources/loader/resource-loader.js"></script>
     <script src="../shared/settings.js"></script>
     <script src="../shared/cache-client.js"></script>
     <script src="popup.js"></script>

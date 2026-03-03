@@ -1,8 +1,4 @@
 (() => {
-  async function initSettings() {
-    await window.ST2YS.Settings.loadAll();
-  }
-
   const adapter = (window.location.hostname === 'music.youtube.com')
     ? window.ST2YS.Adapters.YouTubeMusic
     : window.ST2YS.Adapters.YouTube;
@@ -212,7 +208,7 @@
 
   (async () => {
     console.info('ST2YS: Loading main logic...');
-    await initSettings();
+    await window.ST2YS.Settings.loadAll();
 
     // Track Shift key state to override a potential FALSE value of OPEN_IN_NEW_TAB specifically when pasting the link
     document.addEventListener('keydown', e => { if (e.key === 'Shift') shiftHeld = true;  }, true);

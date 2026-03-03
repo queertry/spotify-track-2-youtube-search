@@ -1,55 +1,80 @@
 (() => {
-  const UI = {
-    DROP_ANYWHERE: {
-      KEY: 'DROP_ANYWHERE',
-      ELEMENT_ID: 'drop-anywhere',
-      EVENT: 'change'
-    },
-    USE_CACHE: {
-      KEY: 'USE_CACHE',
-      ELEMENT_ID: 'use-cache',
-      EVENT: 'change'
-    },
-    OPEN_IN_NEW_TAB: {
-      KEY: 'OPEN_IN_NEW_TAB',
-      ELEMENT_ID: 'open-in-new-tab',
-      EVENT: 'change'
-    },
-    TOAST_DURATION: {
-      KEY: 'TOAST_DURATION',
-      ELEMENT_ID: 'toast-duration',
-      EVENT: 'change'
-    },
-    PREFER_SMOOTH_SEARCH: {
-      KEY: 'PREFER_SMOOTH_SEARCH',
-      ELEMENT_ID: 'prefer-smooth-search',
-      EVENT: 'change'
-    }
-  };
-
-  function getInput(elementId) {
-    return document.getElementById(elementId);
+  function toElementId(key) {
+    return key.toLowerCase().replace(/_/g, '-');
   }
 
-  async function loadIntoUI() {
-    await window.ST2YS.Settings.loadAll();
+  function resolveInputType(def) {
+    return def.inputType ?? (def.type === 'boolean' ? 'checkbox' : 'number');
+  }
 
-    for (const item of Object.values(UI)) {
-      const input = getInput(item.ELEMENT_ID);
+  function buildSettingsUI() {
+    const schema = window.ST2YS.Settings.schema;
+
+    for (const [ key, def ] of Object.entries(schema)) {
+      const elementId = toElementId(key);
+      const hintId    = `${elementId}-hint`;
+      const inputType = resolveInputType(def);
+
+      const section = document.getElementById(def.section);
+      if (!section) {
+        console.error(`ST2YS: Section "${def.section}" not found for setting ${key}`);
+        continue;
+      }
+
+      const label = document.createElement('label');
+      label.className = 'setting-label';
+      label.setAttribute('aria-describedby', hintId);
+
+      if (inputType === 'select') {
+        const span = document.createElement('span');
+        span.textContent = def.label;
+        label.appendChild(span);
+
+        const select = document.createElement('select');
+        select.id = elementId;
+
+        for (const opt of (def.options ?? [])) {
+          const option = document.createElement('option');
+          option.value = opt.value;
+          option.textContent = opt.label;
+          select.appendChild(option);
+        }
+
+        label.appendChild(select);
+      } else {
+        const input = document.createElement('input');
+        input.type = inputType;
+        input.id   = elementId;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(def.label));
+      }
+
+      const hint = document.createElement('div');
+      hint.id          = hintId;
+      hint.className   = 'hint';
+      hint.textContent = def.hint;
+
+      section.appendChild(label);
+      section.appendChild(hint);
+    }
+  }
+
+  function loadIntoUI() {
+    const schema = window.ST2YS.Settings.schema;
+
+    for (const [ key, def ] of Object.entries(schema)) {
+      const elementId = toElementId(key);
+      const input     = document.getElementById(elementId);
       if (!input) {
-        console.error(`ST2YS: Failed to load settings ${item.KEY} into element ${item.ELEMENT_ID} because the element could not be found.`);
+        console.error(`ST2YS: Failed to load setting ${key} into element #${elementId} because the element could not be found.`);
         continue;
       }
 
-      const meta  = window.ST2YS.Settings.getDefinition(item.KEY);
-      const value = window.ST2YS.Settings.getValue(item.KEY);
-
-      if (meta.type === 'boolean') {
-        input.checked = !!value;
-        continue;
+      if (resolveInputType(def) === 'checkbox') {
+        input.checked = !!window.ST2YS.Settings.getValue(key);
+      } else {
+        input.value = String(window.ST2YS.Settings.getValue(key));
       }
-
-      input.value = value;
     }
   }
 
@@ -84,21 +109,22 @@
   }
 
   function bindUI() {
-    for (const item of Object.values(UI)) {
-      const element = getInput(item.ELEMENT_ID);
+    const schema = window.ST2YS.Settings.schema;
+
+    for (const [ key, def ] of Object.entries(schema)) {
+      const elementId = toElementId(key);
+      const element   = document.getElementById(elementId);
       if (!element) {
-        console.error(`ST2YS: Failed to bind event listener for setting ${item.KEY} and element ${item.ELEMENT_ID} because the element could not be found.`);
+        console.error(`ST2YS: Failed to bind event listener for setting ${key} and element #${elementId} because the element could not be found.`);
         continue;
       }
 
-      const meta = window.ST2YS.Settings.getDefinition(item.KEY);
-      element.addEventListener(item.EVENT, async () => {
-        if (meta.type === 'boolean') {
-          await window.ST2YS.Settings.setValue(item.KEY, !!element.checked);
-          return;
+      element.addEventListener('change', async () => {
+        if (resolveInputType(def) === 'checkbox') {
+          await window.ST2YS.Settings.setValue(key, !!element.checked);
+        } else {
+          await window.ST2YS.Settings.setValue(key, element.value);
         }
-
-        await window.ST2YS.Settings.setValue(item.KEY, element.value);
       });
     }
   }
@@ -111,11 +137,14 @@
 
   async function init() {
     setupData();
+    await window.ST2YS.Settings.loadAll();
 
+    buildSettingsUI();
     bindUI();
-    bindCacheUI();
 
-    await loadIntoUI();
+    bindCacheUI();
+    loadIntoUI();
+
     await loadCacheInfo();
   }
 
