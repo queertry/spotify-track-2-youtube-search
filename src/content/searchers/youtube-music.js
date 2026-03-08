@@ -1,5 +1,5 @@
 (() => {
-  class YouTubeMusicAdapter extends window.ST2YS.BaseAdapter {
+  class YouTubeMusicSearcher extends window.ST2YS.Searchers.Base {
     constructor() {
       super({
         searchBarSelector:           '.search-container input.ytmusic-search-box',
@@ -11,6 +11,6 @@
     }
   }
 
-  window.ST2YS.Adapters = window.ST2YS.Adapters || {};
-  window.ST2YS.Adapters.YouTubeMusic = new YouTubeMusicAdapter();
+  window.ST2YS.Searchers              = window.ST2YS.Searchers || {};
+  window.ST2YS.Searchers.YouTubeMusic = new YouTubeMusicSearcher();
 })();

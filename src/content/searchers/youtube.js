@@ -1,5 +1,5 @@
 (() => {
-  class YouTubeAdapter extends window.ST2YS.BaseAdapter {
+  class YouTubeSearcher extends window.ST2YS.Searchers.Base {
     constructor() {
       super({
         searchBarSelector:           'input.yt-searchbox-input',
@@ -10,6 +10,9 @@
       });
     }
 
+    /**
+     * @param {HTMLElement} suggestion
+     */
     _clickSuggestion(suggestion) {
       suggestion.dispatchEvent(new MouseEvent('mousedown', {
         bubbles: true,
@@ -23,6 +26,6 @@
     }
   }
 
-  window.ST2YS.Adapters = window.ST2YS.Adapters || {};
-  window.ST2YS.Adapters.YouTube = new YouTubeAdapter();
+  window.ST2YS.Searchers         = window.ST2YS.Searchers || {};
+  window.ST2YS.Searchers.YouTube = new YouTubeSearcher();
 })();

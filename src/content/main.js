@@ -1,23 +1,28 @@
 (() => {
-  const adapter = (window.location.hostname === 'music.youtube.com')
-    ? window.ST2YS.Adapters.YouTubeMusic
-    : window.ST2YS.Adapters.YouTube;
+  const searcher = (window.location.hostname === 'music.youtube.com')
+    ? window.ST2YS.Searchers.YouTubeMusic
+    : window.ST2YS.Searchers.YouTube;
 
-  const SPOTIFY_HTTP_PREFIX   = 'https://open.spotify.com/track';
-  const SPOTIFY_NATIVE_PREFIX = 'spotify:track:';
-
-  const normalizeText = s => (s || '').replace(/\s+/g, ' ').trim();
+  // Ordered list of resolvers; first whose canHandle() returns true wins.
+  // To add support for a new service, register its resolver here.
+  const resolvers = [
+    window.ST2YS.Resolvers.Spotify,
+  ];
 
   let youtubeSearchIcon = null;
   let loadingIcon = null;
   let isHandling = false;
   let shiftHeld = false;
 
+  function findResolver(rawContent) {
+    return resolvers.find(r => r.canHandle(rawContent)) || null;
+  }
+
   function setLoading() {
     const icon = window.ST2YS.Icons.get('loading');
     icon.classList.add('st2ys-loading-icon');
 
-    const searchIcon = adapter.getSearchIcon();
+    const searchIcon = searcher.getSearchIcon();
     if (searchIcon === null) {
       console.error('ST2YS: Cannot start loading, search icon couldn\'t be found.');
       return;
@@ -41,118 +46,32 @@
     youtubeSearchIcon = null;
   }
 
-  function getTrackId(trackLink) {
-    trackLink = normalizeText(trackLink);
-
-    if (trackLink.startsWith(SPOTIFY_HTTP_PREFIX)) {
-      try {
-        const url = new URL(trackLink);
-        const parts = url.pathname.split('/').filter(x => !!x);
-
-        if (parts[0] !== 'track') return null;
-        if (!parts[1]) return null;
-
-        return parts[1];
-      } catch (e) {
-        console.error('ST2YS:', e);
-        return null;
-      }
-    }
-
-    if (trackLink.startsWith(SPOTIFY_NATIVE_PREFIX)) {
-      const id = trackLink.slice(SPOTIFY_NATIVE_PREFIX.length);
-      return id || null;
-    }
-
-    return null;
-  }
-
-  function parseSpotifyEmbedHtml(html) {
-    if (!html) {
-      console.error('ST2YS: Did not receive any HTML');
-      return null;
-    }
-
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    if (!doc) {
-      console.error('ST2YS: Cannot parse HTML');
-      return null;
-    }
-
-    const titleElement  = doc.querySelector('h1 a');
-    const artistElement = doc.querySelector('h2 a');
-
-    const title  = normalizeText(titleElement  && titleElement.textContent);
-    const artist = normalizeText(artistElement && artistElement.textContent);
-
-    if (!title || !artist) {
-      console.error('ST2YS: Was not able to find title and/or artist');
-      return null;
-    }
-
-    return { title, artist };
-  };
-
-  async function setQueryAndSubmit(query, openInNewTab) {
-    try {
-      return await adapter.performSearch(query, openInNewTab);
-    } finally {
-      stopLoading();
-    }
-  }
-
-  async function handle(trackLink, openInNewTab) {
+  async function handle(resolver, rawContent, openInNewTab) {
     if (isHandling) return;
     isHandling = true;
 
     try {
       setLoading();
 
-      const trackId = getTrackId(normalizeText(trackLink));
-      if (!trackId) {
-        stopLoading();
-        console.error('ST2YS: Failed to extract track id');
-        window.ST2YS.Toast.show('Failed to extract a track ID from the link.');
+      let track;
+
+      try {
+        track = await resolver.extract(rawContent);
+      } catch (e) {
+        console.error('ST2YS:', e.message || e);
+        window.ST2YS.Toast.show(e.message || 'An unexpected error occurred.');
         return;
       }
 
-      const cached = await window.ST2YS.Cache.get(trackId);
-      if (cached) {
-        setQueryAndSubmit(cached, openInNewTab);
-        return;
-      }
-
-      const embedUrl = `https://open.spotify.com/embed/track/${trackId}`;
-      const resp = await browser.runtime.sendMessage({
-        type: 'FETCH_SPOTIFY_TRACK',
-        url: embedUrl
-      });
-
-      if (!resp || !resp.ok) {
-        stopLoading();
-        console.error('ST2YS: Failed to fetch spotify embed page');
-        if (resp && resp.error) console.error('ST2YS: ' + resp.error);
-        window.ST2YS.Toast.show('Failed to reach Spotify to fetch track info.');
-        return;
-      }
-
-      const meta = parseSpotifyEmbedHtml(resp.html);
-      if (!meta) {
-        stopLoading();
-        window.ST2YS.Toast.show('Failed to read the track title and artist from Spotify\'s response.');
-        return;
-      }
-
-      const query = `${meta.title} ${meta.artist}`;
-      window.ST2YS.Cache.set(trackId, query).catch(() => {});
-      setQueryAndSubmit(query, openInNewTab);
+      await searcher.search(track, openInNewTab);
     } finally {
+      stopLoading();
       isHandling = false;
     }
   }
 
   function onPaste(e) {
-    const input = adapter.getSearchBar();
+    const input = searcher.getSearchBar();
     if (!input) {
       console.error('ST2YS: Cannot find search input');
       return;
@@ -161,15 +80,17 @@
     if (e.target !== input) return;
 
     const text = e.clipboardData && e.clipboardData.getData('text/plain');
-    if (!getTrackId(text)) return;
+    const resolver = findResolver(text);
+    if (!resolver) return;
+
     e.preventDefault();
 
     // paste has no e.shiftKey — use the tracked shiftHeld flag instead
-    handle(text, window.ST2YS.Settings.getValue('OPEN_IN_NEW_TAB') || shiftHeld);
+    handle(resolver, text, window.ST2YS.Settings.getValue('OPEN_IN_NEW_TAB') || shiftHeld);
   }
 
   function onDrop(e) {
-    const input = adapter.getSearchBar();
+    const input = searcher.getSearchBar();
     if (!input) return;
 
     const isDroppingOnInput = e.target === input;
@@ -178,15 +99,17 @@
     }
 
     const text = e.dataTransfer && e.dataTransfer.getData('text/plain');
-    if (!getTrackId(text)) return;
+    const resolver = findResolver(text);
+    if (!resolver) return;
+
     e.preventDefault();
 
     // drop exposes shiftKey directly
-    handle(text, window.ST2YS.Settings.getValue('OPEN_IN_NEW_TAB') || e.shiftKey);
+    handle(resolver, text, window.ST2YS.Settings.getValue('OPEN_IN_NEW_TAB') || e.shiftKey);
   }
 
   function onDragOver(e) {
-    const input = adapter.getSearchBar();
+    const input = searcher.getSearchBar();
     if (!input) return;
 
     const isDroppingOnInput = e.target === input;
@@ -199,7 +122,7 @@
   }
 
   function attach() {
-    const input = adapter.getSearchBar();
+    const input = searcher.getSearchBar();
     if (!input) return false;
 
     input.addEventListener('paste', onPaste, true);
@@ -222,7 +145,7 @@
     if (attach()){
       console.info('ST2YS: Main logic loaded successfully.');
       return;
-    } 
+    }
 
     let tries = 0;
     const timer = window.setInterval(() => {
@@ -238,5 +161,5 @@
       }
     }, 500);
   })();
-  
+
 })();

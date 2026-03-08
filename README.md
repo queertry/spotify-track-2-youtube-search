@@ -1,6 +1,6 @@
 # Spotify Track to YouTube Search
 
-This addon enables you to drag and drop a spotify track onto the YouTube search bar and have it automatically seach for that track. It will also work if you copy and paste the track's share link.
+This addon enables you to drag and drop a Spotify track onto the YouTube or YouTube Music search bar and have it automatically search for that track. It will also work if you copy and paste the track's share link.
 
 ## Disclaimer
 
@@ -15,7 +15,7 @@ You can change your settings by left-clicking on the extension in your browser's
 | Name | Type | Default | Description 
 |------|------|---------|------------
 | Drop anywhere | boolean | false | Allows you to drop the track link anywhere on the YouTube page instead of only over the search bar.
-| Use cache | boolean | true | Toggles the cache functionality
+| Use cache | boolean | true | Caches resolved track info for quicker lookups. Entries expire after 30 days.
 | Open in new tab | boolean | false | When true, all track queries will be done in a new tab. Even if false, the query will run in a new tab if the SHIFT key is held while pasting or dropping the track link.
 | Prefer smooth search | boolean | true | When this is true, the code will prioritize a smoother search (one that does not require a page reload) even if that means waiting a few milliseconds for YouTube to load some necessary data. If you have a very fast internet connection, leaving this on could result in a *slightly* slower search.
 
@@ -28,7 +28,7 @@ Below is a table of accessibility-oriented settings.
 
 | Name | Type | Default | Description
 |------|------|---------|------------
-| Toast duration | Dropdown | 5 seconds | Controls the amount of time any toast messages (currently just error messages) are displayed for before being automatically dismissed. A close button to mnaually dimiss the toast is always available.
+| Toast duration | Dropdown | 5 seconds | Controls the amount of time any toast messages (currently just error messages) are displayed for before being automatically dismissed. A close button to manually dismiss the toast is always available.
 
 ## Installation
 

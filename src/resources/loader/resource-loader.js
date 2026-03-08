@@ -5,8 +5,6 @@
   const BASE = browser.runtime.getURL(typeof RESOURCES_BASE !== 'undefined' ? RESOURCES_BASE : 'src/resources/');
 
   async function load({ name, label }) {
-    console.info('ST2YS', { name, label });
-
     if (!name.endsWith('.json')) {
       throw new Error('ST2YS ResourceLoader: Cannot load non-json resource file');
     }

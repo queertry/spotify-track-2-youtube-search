@@ -209,12 +209,15 @@
     if (message.type !== 'ST2YS_CACHE') return;
 
     switch (message.operation) {
-      case 'get':          return get(message.key);
-      case 'set':          return set(message.key, message.value);
-      case 'del':          return del(message.key);
+      case 'get':       return get(message.key);
+      case 'set':       return set(message.key, message.value);
+      case 'del':       return del(message.key);
       case 'clearAll':  return clearAll();
       case 'getStats':  return computeStats();
     }
   });
+
+  // Exposed for migrations.js which runs in the same background context.
+  self.ST2YS_BGCache = { clearAll };
 
 })();

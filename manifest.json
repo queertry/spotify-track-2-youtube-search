@@ -19,7 +19,11 @@
     "storage"
   ],
   "background": {
-    "scripts": [ "src/background/cache.js", "src/background/spotify.js" ],
+    "scripts": [
+      "src/background/cache.js",
+      "src/background/migrations.js",
+      "src/background/spotify.js"
+    ],
     "persistent": false
   },
   "content_scripts": [
@@ -31,15 +35,19 @@
       "css": [ "src/content/toast/toast.css" ],
       "js":  [
         "src/resources/loader/resource-loader.js",
+        "src/shared/utils.js",
         "src/shared/settings.js",
         "src/content/init.js",
         "src/icons/icons.js",
         "src/icons/library/loading.js",
         "src/shared/cache-client.js",
         "src/content/toast/toast.js",
-        "src/content/adapters/base.js",
-        "src/content/adapters/youtube.js",
-        "src/content/adapters/youtube-music.js",
+        "src/content/errors/errors.js",
+        "src/content/searchers/base.js",
+        "src/content/searchers/youtube.js",
+        "src/content/searchers/youtube-music.js",
+        "src/content/resolvers/base.js",
+        "src/content/resolvers/spotify.js",
         "src/content/main.js"
       ],
       "run_at": "document_idle"
